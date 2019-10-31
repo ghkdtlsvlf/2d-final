@@ -21,7 +21,7 @@ double_gun_character1 = None
 
 
 def enter():
-    global game_map, double_gun_character, double_gun_character1
+    global game_map, double_gun_character
     game_map = Game_Map()
     double_gun_character = Double_Gun_Character()
     double_gun_character1 = Double_Gun_Character()
@@ -29,10 +29,9 @@ def enter():
 
 
 def exit():
-    global game_map, double_gun_character, double_gun_character1
+    global game_map, double_gun_character
     del game_map
     del double_gun_character
-    del double_gun_character1
     pass
 
 
@@ -53,14 +52,12 @@ def handle_events():
             game_framework.change_state(title_state)
         else:
             double_gun_character.handle_event(event)
-            double_gun_character1.handle_event(event)
 
     pass
 
 
 def update():
     double_gun_character.update()
-    double_gun_character1.update()
     pass
 
 
@@ -68,6 +65,5 @@ def draw():
     clear_canvas()
     game_map.draw()
     double_gun_character.draw()
-    double_gun_character1.draw()
     update_canvas()
     pass

@@ -18,7 +18,7 @@ class Idle_State:
             x = random.randint(0, 4)
             double_gun_chac.x = 235 + 80 * x
             double_gun_chac.y = 85
-        double_gun_chac.timer = 10
+        double_gun_chac.timer = 90
         pass
 
     @staticmethod
