@@ -80,8 +80,8 @@ class Double_Gun_Character:
 
     def __init__(self):
         self.x, self.y = 230, 85
-        self.image = load_image('Double_gun_mode.png')
-        self.image_attack = load_image('gun_fire2.png')
+        self.image = load_image('image/Double_gun_mode.png')
+        self.image_attack = load_image('image/gun_fire2.png')
         self.attack_frame = 0
         self.frame = 0
         self.timer = 0

@@ -8,7 +8,7 @@ image = None
 
 def enter():
     global image
-    image = load_image('Title_logo.png')
+    image = load_image('image/Title_logo.png')
     pass
 
 
