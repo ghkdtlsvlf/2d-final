@@ -26,11 +26,22 @@ class Idle_State:
     @staticmethod
     def enter(double_gun_chac, event):
         if event == Left_Mouse_Down:
-            x, y = Controller().position
-
-            if double_gun_chac.x - 50 < x < double_gun_chac.x + 50 and \
-                    double_gun_chac.y - 50 < 600 - y - 1 < double_gun_chac.y + 50:
-                double_gun_chac.selected = True
+            global x, y
+            # 이미 눌러진 상태면은 이동
+            if double_gun_chac.selected:
+                double_gun_chac.x = x
+                double_gun_chac.y = 600-1-y
+                double_gun_chac.selected = False
+            # 캐릭터 클릭 및 취소
+            else:
+                if double_gun_chac.x - 50 < x < double_gun_chac.x + 50 and \
+                        double_gun_chac.y - 50 < 600 - y - 1 < double_gun_chac.y + 50:
+                    if double_gun_chac.selected:
+                        double_gun_chac.selected = False
+                    else:
+                        double_gun_chac.selected = True
+                else:
+                    double_gun_chac.selected = False
 
         pass
 
@@ -50,7 +61,7 @@ class Idle_State:
         if double_gun_chac.selected:
             draw_rectangle(*double_gun_chac.get_bb())
 
-        delay(0.1)
+        delay(0.15)
         pass
 
 
@@ -135,7 +146,8 @@ class Double_Gun_Character:
             self.add_event(key_event)
         if (event.type, event.button) in key_event_table:
             button_event = key_event_table[(event.type, event.button)]
+            global x, y
+            x, y = event.x, event.y
             self.add_event(button_event)
-
 
         pass
