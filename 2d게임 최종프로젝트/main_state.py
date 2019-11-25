@@ -9,11 +9,9 @@ import title_state
 import Member_function
 from Map import Game_Map
 from Double_Gun_Charcter import Double_Gun_Character
-
+from zombie_female import Zombie
 name = "MainState"
 
-Main_Game_Wait_Timer = Member_function.GAME_WAIT_TIMER
-Main_Game_Play_Timer = Member_function.GAME_PLAY_TIMER
 
 game_map = None
 double_gun_character = None
@@ -24,7 +22,7 @@ def enter():
     global game_map, double_gun_character
     game_map = Game_Map()
     double_gun_character = Double_Gun_Character()
-    double_gun_character1 = Double_Gun_Character()
+
     pass
 
 
