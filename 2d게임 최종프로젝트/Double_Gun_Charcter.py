@@ -1,9 +1,30 @@
 from pico2d import *
 import random
+import game_world
+import math
+import game_framework
+import main_state
+from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
+
+
+# gun_c Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+# gun_c Action Speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
+
 from Member_function import *
 
 Left_Mouse_Down = False
 Left_Mouse_UP, D_Pressed, Attack_Timer, Wait_Timer = range(4)
+
 key_event_table = {
     (SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT): Left_Mouse_Down,
     (SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT): Left_Mouse_UP,
@@ -36,7 +57,7 @@ class Idle_State:
 
     @staticmethod
     def draw(double_gun_chac):
-        double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 0, 100, 150, double_gun_chac.x, double_gun_chac.y)
+        double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 0, 100, 100, double_gun_chac.x, double_gun_chac.y)
         delay(0.1)
         pass
 
@@ -62,9 +83,10 @@ class Attack_State:
 
     @staticmethod
     def draw(double_gun_chac):
-        double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 150, 80, 150, double_gun_chac.x, double_gun_chac.y)
+        double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 200, 80, 100, double_gun_chac.x,
+                                        double_gun_chac.y )
         double_gun_chac.image_attack.clip_draw(double_gun_chac.attack_frame * 130, 0, 120, 150,
-                                               double_gun_chac.x + 70, double_gun_chac.y + 50)
+                                               double_gun_chac.x + 70, double_gun_chac.y + 40)
         delay(0.2)
 
         pass
@@ -90,8 +112,10 @@ class Double_Gun_Character:
         self.event_que = []
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
-        # fill here
         pass
+
+    def get_bb(self):
+        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def change_state(self, state):
 
@@ -113,6 +137,7 @@ class Double_Gun_Character:
 
     def draw(self):
         self.cur_state.draw(self)
+        draw_rectangle(*self.get_bb())
         pass
 
     def handle_event(self, event):
