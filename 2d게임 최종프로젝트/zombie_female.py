@@ -42,6 +42,7 @@ class Zombie:
             self.attack_state = False
 
         load_images()
+        self.hp = 100
         self.dir = 0
         self.speed = 0
         self.frame = 0
@@ -59,10 +60,21 @@ class Zombie:
         pass
 
     def attack(self):
-        self.dir = 3.14
-        self.speed = 0
-        return BehaviorTree.SUCCESS
+        if self.hp > 0:
+            self.dir = 3.14
+            self.speed = 0
 
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass
+
+    def dead(self):
+        self.x = 900
+        self.y = 600 - 400 - 1
+        self.attack_state = False
+        self.hp = 100
+        return BehaviorTree.SUCCESS
         pass
 
     def get_next_position(self):
@@ -88,14 +100,15 @@ class Zombie:
         pass
 
     def build_behavior_tree(self):
-        # move_attack_node 만들기 attack 우선
+        # move_attack_node 만들기 move 우선 어택 fail dead 만들기
         get_next_position_node = LeafNode("Get Next Position", self.get_next_position)
         move_to_target_node = LeafNode("Move to Target", self.move_to_target)
         move_node = SequenceNode("Move")
         move_node.add_children(get_next_position_node, move_to_target_node)
         attack_node = LeafNode("Attack", self.attack)
+        dead_node = LeafNode("Dead",self.dead)
         move_attack_node = SelectorNode("MoveAttack")
-        move_attack_node.add_children(move_node, attack_node)
+        move_attack_node.add_children(move_node, attack_node,dead_node)
         self.bt = BehaviorTree(move_attack_node)
         pass
 
@@ -108,12 +121,12 @@ class Zombie:
 
     def draw(self):
         if math.cos(self.dir) < 0:
-            if self.speed != 0 and self.attack_state == False:
+            if self.speed != 0 and self.attack_state == False and self.hp>0:
                 Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
             elif self.attack_state:
                 Zombie.images['Attack'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
         else:
-            if self.speed != 0 and self.attack_state == False:
+            if self.speed != 0 and self.attack_state == False and self.hp>0:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)
             elif self.attack_state:
                 Zombie.images['Attack'][int(self.frame)].draw(self.x, self.y, 100, 100)

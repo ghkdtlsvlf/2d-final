@@ -28,7 +28,7 @@ class Idle_State:
         if event == Left_Mouse_Down:
             global x, y
             # 이미 눌러진 상태면은 이동
-            if double_gun_chac.selected:
+            if double_gun_chac.selected and double_gun_chac.attack_state == False:
                 double_gun_chac.x = x
                 double_gun_chac.y = 600 - 1 - y
                 double_gun_chac.selected = False
@@ -36,10 +36,7 @@ class Idle_State:
             else:
                 if double_gun_chac.x - 50 < x < double_gun_chac.x + 50 and \
                         double_gun_chac.y - 50 < 600 - y - 1 < double_gun_chac.y + 50:
-                    if double_gun_chac.selected:
-                        double_gun_chac.selected = False
-                    else:
-                        double_gun_chac.selected = True
+                    double_gun_chac.selected = True
                 else:
                     double_gun_chac.selected = False
 
@@ -80,7 +77,7 @@ class Double_Gun_Character:
         self.frame = 0
         self.Hp = 100
         self.attack_state = False
-        self.attack_damage = 10
+        self.attack_damage = 5
         self.event_que = []
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
@@ -89,9 +86,6 @@ class Double_Gun_Character:
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
-
-    def attack_state(self):
-        pass
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -113,6 +107,7 @@ class Double_Gun_Character:
         if self.attack_state:
             self.image.clip_draw(self.frame * 100, 200, 80, 100, self.x, self.y)
             self.image_attack.clip_draw(self.attack_frame * 130, 0, 120, 150, self.x + 70, self.y + 40)
+            self.mp += 10
             delay(0.2)
         else:
             self.cur_state.draw(self)

@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import  game_world
 
 from pico2d import *
 
@@ -73,10 +74,12 @@ def update():
     if collide(zombie, double_gun_character):
         zombie.attack_state = True
         double_gun_character.attack_state = True
+        zombie.hp -= double_gun_character.attack_damage
     else:
         zombie.attack_state = False
         double_gun_character.attack_state = False
-
+    if zombie.hp <=0:
+        double_gun_character.attack_state = False
     double_gun_character.update()
     zombie.update()
     pass
