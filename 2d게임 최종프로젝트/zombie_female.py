@@ -32,7 +32,7 @@ class Zombie:
     images = None
 
     def __init__(self):
-        positions = [(700, 400), (-100, 400)]
+        positions = [(1500, 400), (-100, 400)]
         self.patrol_positions = []
         for p in positions:
             self.patrol_positions.append((p[0], 600 - p[1]))  # convert for origin at bottom, left

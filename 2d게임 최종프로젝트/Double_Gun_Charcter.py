@@ -76,6 +76,7 @@ class Double_Gun_Character:
         self.attack_frame = 0
         self.frame = 0
         self.Hp = 100
+        self.mp = 0
         self.attack_state = False
         self.attack_damage = 5
         self.event_que = []
