@@ -30,7 +30,7 @@ class Idle_State:
             # 이미 눌러진 상태면은 이동
             if double_gun_chac.selected:
                 double_gun_chac.x = x
-                double_gun_chac.y = 600-1-y
+                double_gun_chac.y = 600 - 1 - y
                 double_gun_chac.selected = False
             # 캐릭터 클릭 및 취소
             else:
@@ -52,7 +52,7 @@ class Idle_State:
     @staticmethod
     def do(double_gun_chac):
         double_gun_chac.frame = (double_gun_chac.frame + 1) % 6
-
+        double_gun_chac.attack_frame = (double_gun_chac.attack_frame + 1) % 6
         pass
 
     @staticmethod
@@ -65,36 +65,8 @@ class Idle_State:
         pass
 
 
-class Attack_State:
-    @staticmethod
-    def enter(double_gun_chac, event):
-        pass
-
-    @staticmethod
-    def exit(double_gun_chac, event):
-        pass
-
-    @staticmethod
-    def do(double_gun_chac):
-        double_gun_chac.frame = (double_gun_chac.frame + 1) % 6
-        double_gun_chac.attack_frame = (double_gun_chac.attack_frame + 1) % 6
-
-        pass
-
-    @staticmethod
-    def draw(double_gun_chac):
-        double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 200, 80, 100, double_gun_chac.x,
-                                        double_gun_chac.y)
-        double_gun_chac.image_attack.clip_draw(double_gun_chac.attack_frame * 130, 0, 120, 150,
-                                               double_gun_chac.x + 70, double_gun_chac.y + 40)
-        delay(0.2)
-
-        pass
-
-
 next_state_table = {
-    Idle_State: {Left_Mouse_UP: Idle_State, Left_Mouse_Down: Idle_State, Attack_Timer: Attack_State},
-    Attack_State: {Wait_Timer: Idle_State}
+    Idle_State: {Left_Mouse_UP: Idle_State, Left_Mouse_Down: Idle_State}
 }
 
 
@@ -106,9 +78,9 @@ class Double_Gun_Character:
         self.image_attack = load_image('image/gun_fire2.png')
         self.attack_frame = 0
         self.frame = 0
-        self.timer = 0
         self.Hp = 100
-        self.Mp = 0
+        self.attack_state = False
+        self.attack_damage = 10
         self.event_que = []
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
@@ -118,8 +90,7 @@ class Double_Gun_Character:
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
-    def change_state(self, state):
-
+    def attack_state(self):
         pass
 
     def add_event(self, event):
@@ -137,7 +108,14 @@ class Double_Gun_Character:
         pass
 
     def draw(self):
-        self.cur_state.draw(self)
+
+        # 공격모드일 경우 그리고 더 안 그린다.
+        if self.attack_state:
+            self.image.clip_draw(self.frame * 100, 200, 80, 100, self.x, self.y)
+            self.image_attack.clip_draw(self.attack_frame * 130, 0, 120, 150, self.x + 70, self.y + 40)
+            delay(0.2)
+        else:
+            self.cur_state.draw(self)
         pass
 
     def handle_event(self, event):

@@ -10,24 +10,24 @@ import Member_function
 from Map import Game_Map
 from Double_Gun_Charcter import Double_Gun_Character
 from zombie_female import Zombie
-name = "MainState"
 
+name = "MainState"
 
 game_map = None
 double_gun_character = None
+zombie = None
 double_gun_character1 = None
 
 
 def enter():
-    global game_map, double_gun_character
+    global game_map, double_gun_character, zombie
     game_map = Game_Map()
     double_gun_character = Double_Gun_Character()
-
+    zombie = Zombie()
     pass
 
 
 def collide(a, b):
-
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
 
@@ -40,9 +40,10 @@ def collide(a, b):
 
 
 def exit():
-    global game_map, double_gun_character
+    global game_map, double_gun_character,zombie
     del game_map
     del double_gun_character
+    del zombie
     pass
 
 
@@ -68,13 +69,23 @@ def handle_events():
 
 
 def update():
+    global game_map, double_gun_character, zombie
+    if collide(zombie, double_gun_character):
+        zombie.attack_state = True
+        double_gun_character.attack_state = True
+    else:
+        zombie.attack_state = False
+        double_gun_character.attack_state = False
+
     double_gun_character.update()
+    zombie.update()
     pass
 
 
 def draw():
     clear_canvas()
     game_map.draw()
+    zombie.draw()
     double_gun_character.draw()
     update_canvas()
     pass
