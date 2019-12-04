@@ -32,7 +32,7 @@ class Zombie:
     images = None
 
     def __init__(self):
-        positions = [(1500, 400), (-100, 400)]
+        positions = [(900, 400), (-100, 400)]
         self.patrol_positions = []
         for p in positions:
             self.patrol_positions.append((p[0], 600 - p[1]))  # convert for origin at bottom, left
@@ -40,12 +40,14 @@ class Zombie:
             self.target_x, self.target_y = None, None
             self.x, self.y = self.patrol_positions[0]
             self.attack_state = False
+            self.image_hp = load_image('image/hp.png')
 
         load_images()
         self.hp = 100
         self.dir = 0
         self.speed = 0
         self.frame = 0
+        self.damage = 1
         self.build_behavior_tree()
 
     def calculate_current_position(self):
@@ -70,8 +72,9 @@ class Zombie:
         pass
 
     def dead(self):
+        main_state.stage -= 1
         self.x = 900
-        self.y = 600 - 400 - 1
+        self.y = 180
         self.attack_state = False
         self.hp = 100
         return BehaviorTree.SUCCESS
@@ -123,8 +126,12 @@ class Zombie:
         if math.cos(self.dir) < 0:
             if self.speed != 0 and self.attack_state == False and self.hp>0:
                 Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
+                self.image_hp.clip_draw(0, 0, self.hp, 11, self.x - 13, self.y - 50)
+
             elif self.attack_state:
                 Zombie.images['Attack'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
+                self.image_hp.clip_draw(0, 0, self.hp, 11, self.x - 13, self.y - 50)
+
         else:
             if self.speed != 0 and self.attack_state == False and self.hp>0:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)

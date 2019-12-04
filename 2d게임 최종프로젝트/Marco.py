@@ -6,6 +6,7 @@ import game_framework
 import main_state
 from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 from pynput.mouse import Controller
+import Bullet
 
 # gun_c Action Speed
 TIME_PER_ACTION = 0.5
@@ -24,49 +25,46 @@ key_event_table = {
 
 class Idle_State:
     @staticmethod
-    def enter(double_gun_chac, event):
+    def enter(marco, event):
         if event == Left_Mouse_Down:
             global x, y
             # 이미 눌러진 상태면은 이동
-            if double_gun_chac.selected and double_gun_chac.attack_state == False:
-                double_gun_chac.x = x
-                double_gun_chac.y = 600 - 1 - y
-                double_gun_chac.selected = False
+            if marco.selected and marco.attack_state == False:
+                marco.x = x
+                marco.y = 600 - 1 - y
+                marco.selected = False
                 main_state.Money -= 2
             # 캐릭터 클릭 및 취소
             else:
-                if double_gun_chac.x - 50 < x < double_gun_chac.x + 50 and \
-                        double_gun_chac.y - 50 < 600 - y - 1 < double_gun_chac.y + 50:
-                    double_gun_chac.selected = True
+                if marco.x - 50 < x < marco.x + 50 and \
+                        marco.y - 50 < 600 - y - 1 < marco.y + 50:
+                    marco.selected = True
                 else:
-                    double_gun_chac.selected = False
+                    marco.selected = False
         pass
 
     @staticmethod
-    def exit(double_gun_chac, event):
+    def exit(marco, event):
         pass
 
     @staticmethod
-    def do(double_gun_chac):
-        double_gun_chac.frame = (double_gun_chac.frame + 1) % 6
-        double_gun_chac.attack_frame = (double_gun_chac.attack_frame + 1) % 6
+    def do(marco):
+        marco.frame = (marco.frame + 1) % 3
+        marco.attack_frame = (marco.attack_frame + 1) % 4
         pass
 
     @staticmethod
-    def draw(double_gun_chac):
-        if not double_gun_chac.attack_state:
-            double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 0, 100, 100, double_gun_chac.x,
-                                            double_gun_chac.y)
-            double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
-            if double_gun_chac.selected:
-                draw_rectangle(*double_gun_chac.get_bb())
+    def draw(marco):
+        if not marco.attack_state:
+            marco.image.clip_draw(marco.frame * 100, 200, 100, 100, marco.x, marco.y)
+            marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
+            if marco.selected:
+                draw_rectangle(*marco.get_bb())
         else:
-            double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 200, 80, 100, double_gun_chac.x,
-                                            double_gun_chac.y)
-            double_gun_chac.image_attack.clip_draw(double_gun_chac.attack_frame * 130, 0, 120, 150,
-                                                   double_gun_chac.x + 70, double_gun_chac.y + 40)
-            double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
-            double_gun_chac.mp += 10
+            marco.image.clip_draw(marco.attack_frame * 100, 0, 100, 100, marco.x, marco.y + 5)
+            marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
+
+            marco.mp += 10
 
         delay(0.15)
         pass
@@ -77,20 +75,20 @@ next_state_table = {
 }
 
 
-class Double_Gun_Character:
-    image =None
+class Marco:
+    bullet = None
+    image = None
     def __init__(self):
-        self.x, self.y = 230, 85
-        if Double_Gun_Character.image == None:
-            self.image = load_image('image/Double_gun_mode.png')
-            self.image_attack = load_image('image/gun_fire2.png')
+        self.x, self.y = 320, 180
+        if Marco.image ==None:
+            self.image = load_image('image/marco.png')
             self.image_hp = load_image('image/hp.png')
         self.attack_frame = 0
         self.frame = 0
         self.hp = 100
         self.mp = 0
+        self.damage = 5
         self.attack_state = False
-        self.attack_damage = 5
         self.event_que = []
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
