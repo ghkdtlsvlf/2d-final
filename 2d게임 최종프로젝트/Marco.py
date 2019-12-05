@@ -57,7 +57,8 @@ class Idle_State:
     def draw(marco):
         if not marco.attack_state:
             marco.image.clip_draw(marco.frame * 100, 200, 100, 100, marco.x, marco.y)
-            marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
+            if marco.y >= 160:
+                marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
             if marco.selected:
                 draw_rectangle(*marco.get_bb())
         else:
@@ -79,7 +80,7 @@ class Marco:
     bullet = None
     image = None
     def __init__(self):
-        self.x, self.y = 320, 180
+        self.x, self.y = 340, 85
         if Marco.image ==None:
             self.image = load_image('image/marco.png')
             self.image_hp = load_image('image/hp.png')

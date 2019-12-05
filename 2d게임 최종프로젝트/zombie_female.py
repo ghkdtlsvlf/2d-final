@@ -77,6 +77,7 @@ class Zombie:
         self.y = 180
         self.attack_state = False
         self.hp = 100
+        main_state.Money += 2
         return BehaviorTree.SUCCESS
         pass
 

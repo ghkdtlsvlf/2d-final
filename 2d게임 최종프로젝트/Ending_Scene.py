@@ -1,14 +1,15 @@
 import game_framework
 import main_state
+import title_state
 from pico2d import *
 
-name = "Clearstate"
+name = "Ending_state"
 image = None
 
 
 def enter():
     global image
-    image = load_image('image/stage_clear.png')
+    image = load_image('image/game_clear.png')
     pass
 
 
@@ -27,16 +28,14 @@ def handle_events():
             if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
                 game_framework.quit()
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
-                main_state.stage = 2
-                main_state.stage_count += 1
-                game_framework.pop_state()
-
+                game_framework.change_state(title_state)
 
     pass
 
 
 def draw():
     clear_canvas()
+    main_state.draw()
     image.draw(400, 300)
     update_canvas()
     pass

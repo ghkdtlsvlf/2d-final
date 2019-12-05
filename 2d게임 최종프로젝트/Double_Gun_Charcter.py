@@ -57,7 +57,8 @@ class Idle_State:
         if not double_gun_chac.attack_state:
             double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 0, 100, 100, double_gun_chac.x,
                                             double_gun_chac.y)
-            double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
+            if double_gun_chac.y>=160:
+                double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
             if double_gun_chac.selected:
                 draw_rectangle(*double_gun_chac.get_bb())
         else:

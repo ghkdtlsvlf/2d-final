@@ -3,19 +3,21 @@ import game_world
 import game_framework
 import title_state
 import clear_stage
+import Ending_Scene
 from Double_Gun_Charcter import Double_Gun_Character
 from Map import Game_Map
 from zombie_female import Zombie
 from Marco import Marco
 from Bullet import Bullet
+
 '''''''''
 남은 구현 사항
+스타트 버튼
+애들 배열로 구성
 합성
 리롤
-게임 돈 표시
-스테이지 남은 몹 표시
-엔딩 보스몹
-마르코 공격 상태
+엔딩 
+보스몹
 '''''''''
 
 name = "MainState"
@@ -27,6 +29,7 @@ double_gun_character1 = None
 marco = None
 bullets = None
 fire = False
+stage_count = 0
 Money = 50
 stage = 2
 
@@ -86,7 +89,10 @@ def handle_events():
 
 
 def update():
-    global game_map, double_gun_character, zombie, marco, bullets, fire,stage
+    global game_map, double_gun_character, zombie, marco, bullets, fire
+    if stage_count == 2:
+        game_framework.change_state(Ending_Scene)
+
     if stage == 0:
         game_framework.push_state(clear_stage)
 
