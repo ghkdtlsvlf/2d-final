@@ -3,16 +3,18 @@ import game_world
 
 import game_framework
 
+
 class Bullet:
     image = None
-    def __init__(self, x =400, y =200):
+
+    def __init__(self, x=400, y=200):
         if Bullet.image == None:
-                Bullet.image = load_image('image/bullet_attack.png')
+            Bullet.image = load_image('image/bullet_attack.png')
 
         self.x = x
         self.y = y
         self.attack_speed = 40
-        self.damage = 50
+        self.damage = 3
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
@@ -26,5 +28,5 @@ class Bullet:
         pass
 
     def draw(self):
-        self.image.draw(self.x+40,self.y+22)
+        self.image.draw(self.x + 40, self.y + 22)
         pass

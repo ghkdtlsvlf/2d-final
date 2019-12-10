@@ -64,7 +64,8 @@ class Idle_State:
         else:
             marco.image.clip_draw(marco.attack_frame * 100, 0, 100, 100, marco.x, marco.y + 5)
             marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
-
+            if marco.attack_frame ==2:
+                marco.gun_fire()
         pass
 
 
@@ -79,32 +80,23 @@ class Marco:
     image_hp = None
 
     def __init__(self):
-        self.position = random.randint(5)
         self.y = 85
         if Marco.image == None:
             Marco.image = load_image('image/marco.png')
             Marco.image_hp = load_image('image/hp.png')
-        if self.position == 5:
-            self.x = 580
-        elif self.position == 4:
-            self.x = 500
-        elif self.position == 3:
-            self.x = 410
-        elif self.position == 2:
-            self.x = 320
-        elif self.position == 1:
-            self.x = 235
-
+        self.x = main_state.character_box[0]
+        main_state.character_box.remove(main_state.character_box[0])
         self.attack_frame = 0
         self.frame = 0
         self.hp = 100
         self.mp = 0
-        self.damage = 5
         self.attack_state = False
         self.event_que = []
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
         self.selected = False
+        self.gun_fire_sound = load_wav('sounds/45-smith-wesson.wav')
+        self.gun_fire_sound.set_volume(30)
         pass
 
     def get_bb(self):
@@ -123,9 +115,10 @@ class Marco:
             self.cur_state.enter(self, event)
 
         pass
+    def gun_fire(self):
+        self.gun_fire_sound.play()
 
     def draw(self):
-
         self.cur_state.draw(self)
         pass
 

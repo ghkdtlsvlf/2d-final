@@ -69,8 +69,8 @@ class Idle_State:
                                                    double_gun_chac.x + 70, double_gun_chac.y + 40)
             double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13,
                                                double_gun_chac.y - 50)
-            double_gun_chac.mp += 10
-
+            if double_gun_chac.attack_frame ==1:
+                double_gun_chac.gun_fire()
         pass
 
 
@@ -85,6 +85,7 @@ class Double_Gun_Character:
     image_hp = None
 
     def __init__(self):
+
         self.y = 85
         if Double_Gun_Character.image == None:
             Double_Gun_Character.image = load_image('image/Double_gun_mode.png')
@@ -103,6 +104,11 @@ class Double_Gun_Character:
         self.cur_state = Idle_State
         self.cur_state.enter(self, None)
         self.selected = False
+        self.gun_sound = load_wav('sounds/20-gauge-shotgun-gunshot.wav')
+        self.gun_sound.set_volume(30)
+        pass
+    def gun_fire(self):
+        self.gun_sound.play()
         pass
 
     def get_bb(self):

@@ -29,7 +29,10 @@ def handle_events():
                 game_framework.quit()
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
                 main_state.stage_count = 0
-                main_state.Money = 50
+                main_state.Money = 20
+                main_state.character_in_re_roll_double_number = 5
+                main_state.character_in_re_roll_marco = 0
+                main_state.character_box = [235, 320, 410, 500, 580]
                 game_framework.change_state(title_state)
 
     pass
