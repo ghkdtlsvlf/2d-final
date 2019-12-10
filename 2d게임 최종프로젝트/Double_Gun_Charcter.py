@@ -28,7 +28,7 @@ class Idle_State:
         if event == Left_Mouse_Down:
             global x, y
             # 이미 눌러진 상태면은 이동
-            if double_gun_chac.selected and double_gun_chac.attack_state == False:
+            if double_gun_chac.selected and double_gun_chac.attack_state == False and main_state.Money >= 2:
                 double_gun_chac.x = x
                 double_gun_chac.y = 600 - 1 - y
                 double_gun_chac.selected = False
@@ -57,8 +57,9 @@ class Idle_State:
         if not double_gun_chac.attack_state:
             double_gun_chac.image.clip_draw(double_gun_chac.frame * 100, 0, 100, 100, double_gun_chac.x,
                                             double_gun_chac.y)
-            if double_gun_chac.y>=160:
-                double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
+            if double_gun_chac.y >= 160:
+                double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13,
+                                                   double_gun_chac.y - 50)
             if double_gun_chac.selected:
                 draw_rectangle(*double_gun_chac.get_bb())
         else:
@@ -66,10 +67,10 @@ class Idle_State:
                                             double_gun_chac.y)
             double_gun_chac.image_attack.clip_draw(double_gun_chac.attack_frame * 130, 0, 120, 150,
                                                    double_gun_chac.x + 70, double_gun_chac.y + 40)
-            double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13, double_gun_chac.y - 50)
+            double_gun_chac.image_hp.clip_draw(0, 0, double_gun_chac.hp, 11, double_gun_chac.x - 13,
+                                               double_gun_chac.y - 50)
             double_gun_chac.mp += 10
 
-        delay(0.15)
         pass
 
 
@@ -79,13 +80,19 @@ next_state_table = {
 
 
 class Double_Gun_Character:
-    image =None
+    image = None
+    image_attack = None
+    image_hp = None
+
     def __init__(self):
-        self.x, self.y = 230, 85
+        self.y = 85
         if Double_Gun_Character.image == None:
-            self.image = load_image('image/Double_gun_mode.png')
-            self.image_attack = load_image('image/gun_fire2.png')
-            self.image_hp = load_image('image/hp.png')
+            Double_Gun_Character.image = load_image('image/Double_gun_mode.png')
+            Double_Gun_Character.image_attack = load_image('image/gun_fire2.png')
+            Double_Gun_Character.image_hp = load_image('image/hp.png')
+
+        self.x = main_state.character_box[0]
+        main_state.character_box.remove(main_state.character_box[0])
         self.attack_frame = 0
         self.frame = 0
         self.hp = 100

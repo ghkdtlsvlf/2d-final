@@ -4,6 +4,7 @@ import game_framework
 from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 from pico2d import *
 import main_state
+import game_world
 
 # zombie Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -29,10 +30,15 @@ def load_images():
 
 
 class Zombie:
+    image_hp = None
     images = None
-
     def __init__(self):
-        positions = [(900, 400), (-100, 400)]
+        # random_gen the first
+        self.line = random.randint(1, 2)
+        if self.line == 1:
+            positions = [(random.randint(900, 1300), 300), (-100, 300)]
+        else:
+            positions = [(random.randint(900, 1300), 400), (-100, 400)]
         self.patrol_positions = []
         for p in positions:
             self.patrol_positions.append((p[0], 600 - p[1]))  # convert for origin at bottom, left
@@ -40,8 +46,8 @@ class Zombie:
             self.target_x, self.target_y = None, None
             self.x, self.y = self.patrol_positions[0]
             self.attack_state = False
-            self.image_hp = load_image('image/hp.png')
-
+        if Zombie.image_hp == None:
+            Zombie.image_hp = load_image('image/hp.png')
         load_images()
         self.hp = 100
         self.dir = 0
@@ -72,11 +78,16 @@ class Zombie:
         pass
 
     def dead(self):
-        main_state.stage -= 1
-        self.x = 900
-        self.y = 180
+        main_state.stage_monster_num -= 1
+        if self.line == 1:
+            self.x = 900
+            self.y = 280
+        else:
+            self.x = 900
+            self.y = 180
         self.attack_state = False
         self.hp = 100
+        game_world.remove_object(self)
         main_state.Money += 2
         return BehaviorTree.SUCCESS
         pass
@@ -110,9 +121,9 @@ class Zombie:
         move_node = SequenceNode("Move")
         move_node.add_children(get_next_position_node, move_to_target_node)
         attack_node = LeafNode("Attack", self.attack)
-        dead_node = LeafNode("Dead",self.dead)
+        dead_node = LeafNode("Dead", self.dead)
         move_attack_node = SelectorNode("MoveAttack")
-        move_attack_node.add_children(move_node, attack_node,dead_node)
+        move_attack_node.add_children(move_node, attack_node, dead_node)
         self.bt = BehaviorTree(move_attack_node)
         pass
 
@@ -120,12 +131,13 @@ class Zombie:
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def update(self):
-        self.bt.run()
+        if main_state.game_start:
+            self.bt.run()
         pass
 
     def draw(self):
         if math.cos(self.dir) < 0:
-            if self.speed != 0 and self.attack_state == False and self.hp>0:
+            if self.speed != 0 and not self.attack_state and self.hp > 0:
                 Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
                 self.image_hp.clip_draw(0, 0, self.hp, 11, self.x - 13, self.y - 50)
 
@@ -134,7 +146,7 @@ class Zombie:
                 self.image_hp.clip_draw(0, 0, self.hp, 11, self.x - 13, self.y - 50)
 
         else:
-            if self.speed != 0 and self.attack_state == False and self.hp>0:
+            if self.speed != 0 and not self.attack_state and self.hp > 0:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)
             elif self.attack_state:
                 Zombie.images['Attack'][int(self.frame)].draw(self.x, self.y, 100, 100)

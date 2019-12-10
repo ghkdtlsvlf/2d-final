@@ -12,40 +12,41 @@ from Bullet import Bullet
 
 '''''''''
 남은 구현 사항
-스타트 버튼
 애들 배열로 구성
-합성
 리롤
-엔딩 
-보스몹
+위치 500,410,330,580
 '''''''''
 
 name = "MainState"
 
 game_map = None
-double_gun_character = None
-zombie = None
+double_gun_characters = None
+zombies = None
 double_gun_character1 = None
-marco = None
+marcos = None
 bullets = None
 fire = False
+game_start = False
 stage_count = 0
-Money = 50
-stage = 2
+Money = 20
+stage_monster_num = 10
+character_in_re_roll_double_number = 5
+character_in_re_roll_marco = 0
+character_box = [235, 320, 410, 500, 580]
 
 
 def enter():
-    global game_map, double_gun_character, zombie, marco, bullets
+    global game_map, double_gun_characters, zombies, marcos, bullets
 
-    marco = Marco()
+    marcos = [Marco() for i in range(character_in_re_roll_marco)]
     bullets = [Bullet()]
     game_map = Game_Map()
-    double_gun_character = Double_Gun_Character()
-    zombie = Zombie()
+    double_gun_characters = [Double_Gun_Character() for i in range(character_in_re_roll_double_number)]
+    zombies = [Zombie() for i in range(stage_monster_num)]
     game_world.add_object(game_map, 0)
-    game_world.add_object(zombie, 1)
-    game_world.add_object(double_gun_character, 1)
-    game_world.add_object(marco, 1)
+    game_world.add_objects(zombies, 1)
+    game_world.add_objects(double_gun_characters, 1)
+    game_world.add_objects(marcos, 1)
     pass
 
 
@@ -75,6 +76,7 @@ def resume():
 
 
 def handle_events():
+    global double_gun_characters, marcos
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -82,58 +84,75 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.change_state(title_state)
         else:
-            double_gun_character.handle_event(event)
-            marco.handle_event(event)
+            for double_gun_character in double_gun_characters:
+                double_gun_character.handle_event(event)
+            for marco in marcos:
+                marco.handle_event(event)
+            game_map.handle_event(event)
 
     pass
 
 
 def update():
-    global game_map, double_gun_character, zombie, marco, bullets, fire
+    global game_map, double_gun_characters, zombies, marcos, bullets, fire, game_start, stage_monster_num
     if stage_count == 2:
         game_framework.change_state(Ending_Scene)
 
-    if stage == 0:
+    if stage_monster_num <= 0:
+        game_start = False
+        stage_monster_num = 10
+        zombies = [Zombie() for i in range(stage_monster_num)]
+        game_world.add_objects(zombies, 1)
         game_framework.push_state(clear_stage)
 
-    if collide(zombie, double_gun_character):
-        zombie.attack_state = True
-        double_gun_character.attack_state = True
-        zombie.hp -= double_gun_character.attack_damage
-        double_gun_character.hp -= zombie.damage
-    else:
-        zombie.attack_state = False
-        double_gun_character.attack_state = False
-    if collide(zombie, marco):
-        zombie.attack_state = True
-    # 총알이랑 판정
-    if marco.attack_state:
-        for bullet in bullets:
-            if collide(zombie, bullet):
-                bullets.remove(bullet)
-                zombie.hp -= bullet.damage
-                game_world.remove_object(bullet)
+    for zombie in zombies:
+        for double_gun_character in double_gun_characters:
+            if collide(zombie, double_gun_character):
+                zombie.attack_state = True
+                double_gun_character.attack_state = True
+                zombie.hp -= double_gun_character.attack_damage
+                if double_gun_character.hp > 0:
+                    double_gun_character.hp -= zombie.damage
+                else:
+                    zombie.attack_state = False
+                    double_gun_character.attack_damage = 0
+                    game_world.remove_object(double_gun_character)
 
-        if marco.attack_state and marco.attack_frame == 2:
-            bullets.append(Bullet())
-            for bullet in bullets:
-                bullet.x = marco.x
-                bullet.y = marco.y
-                game_world.add_objects(bullets, 1)
+            if zombie.hp <= 0:
+                double_gun_character.attack_state = False
 
-        for bullet in bullets:
-            if bullet.x >= 800:
-                bullets.remove(bullet)
+    for zombie in zombies:
+        for marco in marcos:
+            if collide(zombie, marco):
+                zombie.attack_state = True
+                # 총알이랑 판정
+            if marco.attack_state:
+                for bullet in bullets:
+                    if collide(zombie, bullet):
+                        zombie.hp -= bullet.damage
+                        bullets.remove(bullet)
+                        game_world.remove_object(bullet)
 
-    if zombie.hp and zombie.y-50<marco.y < zombie.y+50 > 0:
-        marco.attack_state = True
+                if marco.attack_state and marco.attack_frame == 2:
+                    bullets.append(Bullet())
+                    for bullet in bullets:
+                        bullet.x = marco.x
+                        bullet.y = marco.y
+                        game_world.add_objects(bullets, 1)
 
-    if zombie.hp <= 0:
-        double_gun_character.attack_state = False
-        marco.attack_state = False
+                for bullet in bullets:
+                    if bullet.x >= 800:
+                        bullets.remove(bullet)
+                        game_world.remove_object(bullet)
+
+            if zombie.hp and zombie.y - 50 < marco.y < zombie.y + 50 and game_start > 0:
+                marco.attack_state = True
+            if zombie.hp < 0:
+                marco.attack_state = False
 
     for game_object in game_world.all_objects():
         game_object.update()
+    delay(0.1)
 
     pass
 

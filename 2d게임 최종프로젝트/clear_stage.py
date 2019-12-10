@@ -27,7 +27,7 @@ def handle_events():
             if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
                 game_framework.quit()
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
-                main_state.stage = 2
+                main_state.stage_monster_num = 2
                 main_state.stage_count += 1
                 game_framework.pop_state()
 

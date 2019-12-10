@@ -28,6 +28,8 @@ def handle_events():
             if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
                 game_framework.quit()
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
+                main_state.stage_count = 0
+                main_state.Money = 50
                 game_framework.change_state(title_state)
 
     pass
@@ -35,8 +37,7 @@ def handle_events():
 
 def draw():
     clear_canvas()
-    main_state.draw()
-    image.draw(400, 300)
+    image.draw(400,300)
     update_canvas()
     pass
 

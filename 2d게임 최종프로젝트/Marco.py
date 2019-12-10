@@ -29,7 +29,7 @@ class Idle_State:
         if event == Left_Mouse_Down:
             global x, y
             # 이미 눌러진 상태면은 이동
-            if marco.selected and marco.attack_state == False:
+            if marco.selected and marco.attack_state == False and main_state.Money >= 2:
                 marco.x = x
                 marco.y = 600 - 1 - y
                 marco.selected = False
@@ -65,9 +65,6 @@ class Idle_State:
             marco.image.clip_draw(marco.attack_frame * 100, 0, 100, 100, marco.x, marco.y + 5)
             marco.image_hp.clip_draw(0, 0, marco.hp, 11, marco.x - 13, marco.y - 50)
 
-            marco.mp += 10
-
-        delay(0.15)
         pass
 
 
@@ -79,11 +76,25 @@ next_state_table = {
 class Marco:
     bullet = None
     image = None
+    image_hp = None
+
     def __init__(self):
-        self.x, self.y = 340, 85
-        if Marco.image ==None:
-            self.image = load_image('image/marco.png')
-            self.image_hp = load_image('image/hp.png')
+        self.position = random.randint(5)
+        self.y = 85
+        if Marco.image == None:
+            Marco.image = load_image('image/marco.png')
+            Marco.image_hp = load_image('image/hp.png')
+        if self.position == 5:
+            self.x = 580
+        elif self.position == 4:
+            self.x = 500
+        elif self.position == 3:
+            self.x = 410
+        elif self.position == 2:
+            self.x = 320
+        elif self.position == 1:
+            self.x = 235
+
         self.attack_frame = 0
         self.frame = 0
         self.hp = 100
