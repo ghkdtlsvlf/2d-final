@@ -91,16 +91,28 @@ def handle_events():
                 game_start = True
             elif 80 < x < 150 and 40 < 600 - y - 1 < 130:
                 # re-roll
-                Money -= 1
+                num_double =0
                 for double_gun_character in double_gun_characters:
                     if double_gun_character.y <= 150:
-                        game_world.remove_object(double_gun_character)
-                        double_gun_characters.remove(double_gun_character)
+                        num_double += 1
+
+                Money -= 1
+                while num_double > 0:
+                    for double_gun_character in double_gun_characters:
+                        if double_gun_character.y <= 150:
+                            game_world.remove_object(double_gun_character)
+                            double_gun_characters.remove(double_gun_character)
+                            num_double -= 1
+                num_marco =0
                 for marco in marcos:
                     if marco.y <= 150:
-                        game_world.remove_object(marco)
-                        marcos.remove(marco)
-
+                        num_marco +=1
+                while num_marco>0:
+                    for marco in marcos:
+                        if marco.y <= 150:
+                            game_world.remove_object(marco)
+                            marcos.remove(marco)
+                            num_marco -= 1
                 character_count = random.randint(1, 5)
                 character_in_re_roll_double_number = character_count
                 character_in_re_roll_marco = 5 - character_in_re_roll_double_number
