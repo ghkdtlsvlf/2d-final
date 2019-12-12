@@ -22,9 +22,9 @@ marcos = None
 bullets = None
 fire = False
 game_start = False
-stage_count = 0
+stage_count = 1
 Money = 20
-stage_monster_num = 10
+stage_monster_num = 10 * stage_count
 character_in_re_roll_double_number = 5
 character_in_re_roll_marco = 0
 character_box = [235, 320, 410, 500, 580]
@@ -78,12 +78,12 @@ def handle_events():
             game_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.change_state(title_state)
-        else:
+
+        if (event.type, event.button) == (SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT):
             for double_gun_character in double_gun_characters:
                 double_gun_character.handle_event(event)
             for marco in marcos:
                 marco.handle_event(event)
-        if (event.type, event.button) == (SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT):
             x = event.x
             y = event.y
             # x640 y100
@@ -93,20 +93,22 @@ def handle_events():
                 # re-roll
                 Money -= 1
                 for double_gun_character in double_gun_characters:
-                    if double_gun_character.y < 150:
+                    if double_gun_character.y <= 150:
                         game_world.remove_object(double_gun_character)
+                        double_gun_characters.remove(double_gun_character)
                 for marco in marcos:
-                    if marco.y < 150:
+                    if marco.y <= 150:
                         game_world.remove_object(marco)
+                        marcos.remove(marco)
+
                 character_count = random.randint(1, 5)
                 character_in_re_roll_double_number = character_count
                 character_in_re_roll_marco = 5 - character_in_re_roll_double_number
                 character_box = [320, 235, 580, 500, 410]
-                marcos = [Marco() for i in range(character_in_re_roll_marco)]
-                double_gun_characters = [Double_Gun_Character() for i in range(character_in_re_roll_double_number)]
+                marcos += [Marco() for i in range(character_in_re_roll_marco)]
+                double_gun_characters += [Double_Gun_Character() for i in range(character_in_re_roll_double_number)]
                 game_world.add_objects(double_gun_characters, 1)
                 game_world.add_objects(marcos, 1)
-
     pass
 
 
@@ -120,7 +122,7 @@ def update():
 
     if stage_monster_num <= 0:
         game_start = False
-        stage_monster_num = 10
+        stage_monster_num = 10 * (stage_count+1)
         zombies = [Zombie() for i in range(stage_monster_num)]
         game_world.add_objects(zombies, 1)
         game_framework.push_state(clear_stage)

@@ -10,6 +10,7 @@ class Game_Map:
         self.bgm = load_music('sounds/07-the midnight wandering.mp3')
         self.bgm.set_volume(40)
         self.bgm.repeat_play()
+
     def draw(self):
         self.image.draw(400, 300)
         self.font.draw(600, 575, 'Money: %2d' % main_state.Money, (255, 255, 0))
@@ -17,5 +18,3 @@ class Game_Map:
 
     def update(self):
         self.image.draw(400, 300)
-
-
